@@ -64,7 +64,7 @@ public class OrderService {
     }
 
     public Order getOrder(Long id) {
-    return orderRepository.findById(id).orElse(Order.builder().build());
+        return orderRepository.findById(id).orElse(Order.builder().build());
     }
 
     private StateMachine<OrderStates, OrderEvents> build(Long orderId) {
