@@ -2,6 +2,8 @@ package io.artur.spring.orderservicesm;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.statemachine.StateContext;
+import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
@@ -34,6 +36,15 @@ public class OrderStateMachineConfiguration extends StateMachineConfigurerAdapte
     public void configure(StateMachineStateConfigurer<OrderStates, OrderEvents> states) throws Exception {
         states.withStates()
                 .initial(OrderStates.SUBMITTED)
+                .stateEntry(OrderStates.SUBMITTED, new Action<OrderStates, OrderEvents>() {
+                    @Override
+                    public void execute(StateContext<OrderStates, OrderEvents> stateContext) {
+                        Long orderId = Long.class.cast(stateContext.getExtendedState().getVariables()
+                                .getOrDefault("orderId", -1L));
+                        log.info("Order id is: " + orderId + ".");
+                        log.info("Entering into submitted state");
+                    }
+                })
                 .state(OrderStates.PAID)
                 .end(OrderStates.FULFILLED)
                 .end(OrderStates.CANCELED);
